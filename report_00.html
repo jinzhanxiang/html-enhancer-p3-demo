@@ -39,19 +39,23 @@ a:hover{color:#1a365d;text-decoration:underline}
 /* 附件链接样式 */
 .appendix-link{display:inline-block;background:#1a365d;color:#fff;padding:6px 14px;border-radius:6px;font-size:15px;margin:4px 4px 4px 0;text-decoration:none}
 .appendix-link:hover{background:#2d3748;color:#fff;text-decoration:none}
-
-/* P12 FIX 2026-07-18 18:50 · 主公指令"去掉关键结论" · DOM/CSS/@media 子规则/JS 引用清理完成 */
 </style>
 <style id="toc-sidebar">
+/* ===== enhance_report: 浮动侧边栏（默认收起）V14.0 重大修复 ===== */
+/* ⚠️ FIX V14.0: 必须用 position:fixed，否则 transform 偏移会依赖文档流造成布局错乱 */
+.toc-sidebar, 
 .toc-sidebar{left:0}
+
 /* V15.2.7 FIX: 默认完全隐藏（不占据浮动位置）避免视口外 borderLeft 残留 */
 .toc-sidebar:not(.open){transform:translateX(calc(-100% - 20px));visibility:hidden;opacity:0;pointer-events:none}
 .toc-sidebar.open{transform:translateX(10px);visibility:visible;opacity:1;pointer-events:auto}
+
+
 /* P8 FIX: PC 端（≥769px）默认展开 TOC/key，禁止 transform 推到屏外 */
 @media (min-width:769px){
   .toc-sidebar,.toc-sidebar:not(.open){transform:translateX(10px) !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;left:0 !important}
-  .key-conclusion,.key-conclusion:not(.open){transform:translateX(-10px) !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;right:0 !important}
-  .toc-sidebar-toggle,.key-conclusion-toggle{display:none !important}
+  
+  
 }
 
 /* P9 FIX 2026-07-18 18:12 · 主公反馈"TOC 严重遮挡 H1"
@@ -62,7 +66,14 @@ a:hover{color:#1a365d;text-decoration:underline}
 @media (max-width:768px){
   body{padding-left:20px !important; max-width:none !important; margin:0 !important}
 }
+/* ⚠️ P8 FIX 2026-07-18 17:48: 主公反馈"PC 端看不到目录"
+   - 撤销 V15.2.10 的 PC 端 toggle 默认隐藏（PC 也要用目录）
+   - PC 端（≥769px）TOC/key 默认展开（强制 visibility:visible + transform:translateX(10px)）
+   - 移动端（< 769px）保留 V15.2.10 默认收起 + toggle 按钮（仅 < 768px 显示）
+   - 完整方案见工作区 P8_FIX_REPORT.md */
+.toc-sidebar-toggle, 
 .toc-sidebar-toggle{top:120px;left:20px;background:#1a365d;color:#fff}
+
 /* ⚠️ FIX V15.0: TOC 标题 + 列表完整排版（解决"打开后排版混乱"） */
 .toc-sidebar .toc-title{
   font-size:16px !important;font-weight:700 !important;
@@ -126,23 +137,34 @@ a:hover{color:#1a365d;text-decoration:underline}
   padding-left: 30px !important;
 }
 
-/* P11 v3 FIX: 关键结论不遮盖正文 - 视口 ≥ 1201px 时 fixed 240 + body 让出 280px */
+
+
+
+/* P12 FIX 2026-07-18 18:55 · 主公指令"去掉关键结论" · 全部清理完成 */
 @media (min-width: 1201px) {
   body {
     padding-right: 20px !important;
-  } /* P12: key-conclusion removed */
-  .key-conclusion {
-    position: fixed !important;
-    right: 20px !important;
-    width: 240px !important;
-    max-width: 240px !important;
   }
+  
 }
 @media (max-width: 1200px) {
   body {
     padding-right: 20px !important;
   }
+  
 }
+
+
+/* P11 FIX: 关键结论不遮盖正文 - body 让出 280px 右侧空间 */
+
+
+
+
+/* P11 FIX: 关键结论不遮盖正文 - body 让出 280px 右侧空间 */
+
+
+
+.key-conclusion .toc-list a:hover{background:#fef3c7 !important}
 /* ⚠️ V15.2.11 主公 2026-07-15 09:27:52 指令：彻底删除手机界面，全部采用 PC 版
    原 @media (max-width:768px) 和 @media (max-width:420px) 整块删除
    后续需要移动端适配时，再重新设计 */
@@ -893,8 +915,7 @@ document.addEventListener('DOMContentLoaded', function() {
     enhanceExistingToggle('.' + btnId, targetSel);
   }
   if (document.querySelector('.toc-sidebar')) makeToggle('.toc-sidebar', 'toc-sidebar-toggle', '📑 目录');
-  if (document.querySelector('.key-conclusion')) makeToggle('.key-conclusion', 'key-conclusion-toggle', '⭐ 关键结论');
-  /* ⚠️ V15.2.11 主公 2026-07-15 09:27:52 指令：删除手机界面，全部采用 PC 版
+/* ⚠️ V15.2.11 主公 2026-07-15 09:27:52 指令：删除手机界面，全部采用 PC 版
      V15.2.10 视口监听已废弃，toggle 按钮统一行为由 CSS 控制 */
 })();
 </script><script>
