@@ -39,27 +39,14 @@ a:hover{color:#1a365d;text-decoration:underline}
 /* 附件链接样式 */
 .appendix-link{display:inline-block;background:#1a365d;color:#fff;padding:6px 14px;border-radius:6px;font-size:15px;margin:4px 4px 4px 0;text-decoration:none}
 .appendix-link:hover{background:#2d3748;color:#fff;text-decoration:none}
+
+/* P12 FIX 2026-07-18 18:50 · 主公指令"去掉关键结论" · DOM/CSS/@media 子规则/JS 引用清理完成 */
 </style>
 <style id="toc-sidebar">
-/* ===== enhance_report: 浮动侧边栏（默认收起）V14.0 重大修复 ===== */
-/* ⚠️ FIX V14.0: 必须用 position:fixed，否则 transform 偏移会依赖文档流造成布局错乱 */
-.toc-sidebar, .key-conclusion{
-  position:fixed !important;top:80px;z-index:90;
-  width:240px;max-height:75vh;overflow-y:auto;
-  padding:14px;border-radius:8px;
-  background:#fff;border:1px solid #e2e8f0;
-  box-shadow:0 4px 16px rgba(0,0,0,0.12);
-  font-size:13px;line-height:1.55;
-  transition:transform 0.3s ease,left 0.3s ease,right 0.3s ease;
-  box-sizing:border-box;
-}
 .toc-sidebar{left:0}
-.key-conclusion{right:0}
 /* V15.2.7 FIX: 默认完全隐藏（不占据浮动位置）避免视口外 borderLeft 残留 */
 .toc-sidebar:not(.open){transform:translateX(calc(-100% - 20px));visibility:hidden;opacity:0;pointer-events:none}
 .toc-sidebar.open{transform:translateX(10px);visibility:visible;opacity:1;pointer-events:auto}
-.key-conclusion:not(.open){transform:translateX(calc(100% + 20px));visibility:hidden;opacity:0;pointer-events:none}
-.key-conclusion.open{transform:translateX(-10px);visibility:visible;opacity:1;pointer-events:auto}
 /* P8 FIX: PC 端（≥769px）默认展开 TOC/key，禁止 transform 推到屏外 */
 @media (min-width:769px){
   .toc-sidebar,.toc-sidebar:not(.open){transform:translateX(10px) !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;left:0 !important}
@@ -75,19 +62,7 @@ a:hover{color:#1a365d;text-decoration:underline}
 @media (max-width:768px){
   body{padding-left:20px !important; max-width:none !important; margin:0 !important}
 }
-/* ⚠️ P8 FIX 2026-07-18 17:48: 主公反馈"PC 端看不到目录"
-   - 撤销 V15.2.10 的 PC 端 toggle 默认隐藏（PC 也要用目录）
-   - PC 端（≥769px）TOC/key 默认展开（强制 visibility:visible + transform:translateX(10px)）
-   - 移动端（< 769px）保留 V15.2.10 默认收起 + toggle 按钮（仅 < 768px 显示）
-   - 完整方案见工作区 P8_FIX_REPORT.md */
-.toc-sidebar-toggle, .key-conclusion-toggle{
-  position:fixed;z-index:99;padding:10px 14px;border-radius:8px;
-  cursor:pointer;font-size:13px;font-weight:600;border:none;
-  box-shadow:0 2px 8px rgba(0,0,0,0.2);
-  white-space:nowrap;
-}
 .toc-sidebar-toggle{top:120px;left:20px;background:#1a365d;color:#fff}
-.key-conclusion-toggle{top:120px;right:20px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #d69e2e;color:#744210}
 /* ⚠️ FIX V15.0: TOC 标题 + 列表完整排版（解决"打开后排版混乱"） */
 .toc-sidebar .toc-title{
   font-size:16px !important;font-weight:700 !important;
@@ -151,18 +126,11 @@ a:hover{color:#1a365d;text-decoration:underline}
   padding-left: 30px !important;
 }
 
-
-.key-conclusion .toc-list a{
-  display:block !important;padding:6px 10px !important;
-  color:#744210 !important;text-decoration:none !important;
-  font-size:15px !important;border-radius:4px !important;
-}
-
 /* P11 v3 FIX: 关键结论不遮盖正文 - 视口 ≥ 1201px 时 fixed 240 + body 让出 280px */
 @media (min-width: 1201px) {
   body {
-    padding-right: 280px !important;
-  }
+    padding-right: 20px !important;
+  } /* P12: key-conclusion removed */
   .key-conclusion {
     position: fixed !important;
     right: 20px !important;
@@ -174,25 +142,7 @@ a:hover{color:#1a365d;text-decoration:underline}
   body {
     padding-right: 20px !important;
   }
-  .key-conclusion {
-    position: static !important;
-    max-width: 100% !important;
-    width: auto !important;
-    margin: 24px 0 !important;
-  }
 }
-
-
-/* P11 FIX: 关键结论不遮盖正文 - body 让出 280px 右侧空间 */
-
-
-
-
-/* P11 FIX: 关键结论不遮盖正文 - body 让出 280px 右侧空间 */
-
-
-
-.key-conclusion .toc-list a:hover{background:#fef3c7 !important}
 /* ⚠️ V15.2.11 主公 2026-07-15 09:27:52 指令：彻底删除手机界面，全部采用 PC 版
    原 @media (max-width:768px) 和 @media (max-width:420px) 整块删除
    后续需要移动端适配时，再重新设计 */
@@ -391,10 +341,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </ul>
 </div>
 
-<div class="key-conclusion">
-<h3 class="callout-h">🎯 关键结论</h3>
-<p>核心观点详见正文各章节分析。</p>
-</div>
 <h1>天保控股 vs 启源芯动力 体制机制详细比对报告（最终版）</h1>
 <p><strong>报告类型：</strong> 董事长专题研究会汇报材料<br />
 <strong>生成时间：</strong> 2026-03-25 10:35:58<br />
