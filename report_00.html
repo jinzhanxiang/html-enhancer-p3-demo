@@ -6,7 +6,7 @@
 <title>report</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1a202c;background:#fff;line-height:1.9;font-size:19px;max-width:1000px;margin:0 auto;padding:20px}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1a202c;background:#fff;line-height:1.9;font-size:19px;max-width:1000px;margin:0 auto;padding:20px 20px 20px 280px}
 h1{font-size:30px;color:#1a365d;margin:28px 0 16px;border-bottom:3px solid #d69e2e;padding-bottom:12px;font-weight:700}
 h2{font-size:26px;color:#1a365d;margin:30px 0 16px;font-weight:700}
 h3{font-size:22px;color:#2d3748;margin:24px 0 12px;font-weight:600}
@@ -65,6 +65,15 @@ a:hover{color:#1a365d;text-decoration:underline}
   .toc-sidebar,.toc-sidebar:not(.open){transform:translateX(10px) !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;left:0 !important}
   .key-conclusion,.key-conclusion:not(.open){transform:translateX(-10px) !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;right:0 !important}
   .toc-sidebar-toggle,.key-conclusion-toggle{display:none !important}
+}
+
+/* P9 FIX 2026-07-18 18:12 · 主公反馈"TOC 严重遮挡 H1"
+   修复 PC 端 body 让出 280px 给 TOC（240px + 间距 40px），< 768px 移动端归零 */
+@media (min-width:769px){
+  body{padding-left:280px; max-width:none; margin:0}
+}
+@media (max-width:768px){
+  body{padding-left:20px !important; max-width:none !important; margin:0 !important}
 }
 /* ⚠️ P8 FIX 2026-07-18 17:48: 主公反馈"PC 端看不到目录"
    - 撤销 V15.2.10 的 PC 端 toggle 默认隐藏（PC 也要用目录）
