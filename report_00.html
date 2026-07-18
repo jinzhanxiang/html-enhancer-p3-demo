@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>report</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1a202c;background:#fff;line-height:1.9;font-size:19px;max-width:1000px;margin:0 auto;padding:20px}
+h1{font-size:30px;color:#1a365d;margin:28px 0 16px;border-bottom:3px solid #d69e2e;padding-bottom:12px;font-weight:700}
+h2{font-size:26px;color:#1a365d;margin:30px 0 16px;font-weight:700}
+h3{font-size:22px;color:#2d3748;margin:24px 0 12px;font-weight:600}
+h4{font-size:20px;color:#2d3748;margin:20px 0 10px;font-weight:600}
+p{margin-bottom:14px;font-size:19px}
+strong{color:#1a365d}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:17px}
+th{background:#1a365d;color:#fff;padding:12px 16px;text-align:left;font-size:17px}
+td{padding:11px 16px;border-bottom:1px solid #e2e8f0;font-size:17px}
+tr:hover td{background:#edf2f7}
+blockquote{background:linear-gradient(135deg,#fef9e7,#fef3c7);border-left:4px solid #d69e2e;padding:16px 20px;margin:18px 0;border-radius:0 8px 8px 0;color:#744210;font-size:18px;font-weight:500}
+.nav{background:#1a365d;padding:16px 20px;margin:-20px -20px 28px;border-radius:0 0 8px 8px}
+.nav a{color:rgba(255,255,255,0.8);text-decoration:none;font-size:15px;margin-right:16px}
+ul,ol{margin:14px 0 14px 28px}
+li{margin-bottom:8px;font-size:19px}
+code{background:#f7fafc;padding:3px 8px;border-radius:4px;font-size:17px}
+pre{background:#1a202c;color:#e2e8f0;padding:18px;border-radius:8px;margin:18px 0;overflow-x:auto}
+pre code{background:none;color:inherit;font-size:16px}
+/* 折叠样式 */
+details{margin:16px 0;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden}
+details summary{padding:14px 18px;background:#f7fafc;cursor:pointer;font-weight:600;color:#1a365d;font-size:17px;user-select:none}
+details summary{display:list-item;list-style-type:disclosure-closed}
+details[open] summary{list-style-type:disclosure-open}
+details[open] summary::before{transform:rotate(90deg)}
+details summary:hover{background:#edf2f7}
+details .detail-content{padding:18px;background:#fff}
+/* 链接样式 */
+a{color:#3182ce;text-decoration:none}
+a:hover{color:#1a365d;text-decoration:underline}
+/* 附件链接样式 */
+.appendix-link{display:inline-block;background:#1a365d;color:#fff;padding:6px 14px;border-radius:6px;font-size:15px;margin:4px 4px 4px 0;text-decoration:none}
+.appendix-link:hover{background:#2d3748;color:#fff;text-decoration:none}
+<style id="toc-sidebar">
+/* ===== enhance_report: 浮动侧边栏（默认收起）V14.0 重大修复 ===== */
+/* ⚠️ FIX V14.0: 必须用 position:fixed，否则 transform 偏移会依赖文档流造成布局错乱 */
+.toc-sidebar, .key-conclusion{
+  position:fixed !important;top:80px;z-index:90;
+  width:240px;max-height:75vh;overflow-y:auto;
+  padding:14px;border-radius:8px;
+  background:#fff;border:1px solid #e2e8f0;
+  box-shadow:0 4px 16px rgba(0,0,0,0.12);
+  font-size:13px;line-height:1.55;
+  transition:transform 0.3s ease,left 0.3s ease,right 0.3s ease;
+  box-sizing:border-box;
+}
+.toc-sidebar{left:0}
+.key-conclusion{right:0}
+/* V15.2.7 FIX: 默认完全隐藏（不占据浮动位置）避免视口外 borderLeft 残留 */
+.toc-sidebar:not(.open){transform:translateX(calc(-100% - 20px));visibility:hidden;opacity:0;pointer-events:none}
+.toc-sidebar.open{transform:translateX(10px);visibility:visible;opacity:1;pointer-events:auto}
+.key-conclusion:not(.open){transform:translateX(calc(100% + 20px));visibility:hidden;opacity:0;pointer-events:none}
+.key-conclusion.open{transform:translateX(-10px);visibility:visible;opacity:1;pointer-events:auto}
+/* ⚠️ V15.2.10 FIX: PC 端默认隐藏 toggle 按钮（主公 2026-07-15 08:23 反馈"PC 端像手机版"）
+   toggle 按钮在桌面端默认隐藏，只在 < 768px 移动端显示，避免桌面端误以为窄屏 */
+.toc-sidebar-toggle, .key-conclusion-toggle{display:none !important}
+.toc-sidebar-toggle, .key-conclusion-toggle{
+  position:fixed;z-index:99;padding:10px 14px;border-radius:8px;
+  cursor:pointer;font-size:13px;font-weight:600;border:none;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+  white-space:nowrap;
+}
+.toc-sidebar-toggle{top:120px;left:20px;background:#1a365d;color:#fff}
+.key-conclusion-toggle{top:120px;right:20px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #d69e2e;color:#744210}
+/* ⚠️ FIX V15.0: TOC 标题 + 列表完整排版（解决"打开后排版混乱"） */
+.toc-sidebar .toc-title{
+  font-size:14px !important;font-weight:700 !important;
+  color:#1a365d !important;margin:0 0 10px 0 !important;
+  padding-bottom:8px !important;border-bottom:2px solid #1a365d !important;
+  text-align:left !important;line-height:1.4 !important;
+}
+.toc-sidebar .toc-list, .toc-sidebar ul.toc-list{
+  list-style:none !important;margin:0 !important;padding:0 !important;
+  max-height:65vh !important;overflow-y:auto !important;
+}
+.toc-sidebar .toc-list li, .toc-sidebar ul.toc-list > li{
+  margin:0 !important;padding:0 !important;line-height:1.5 !important;
+  border:none !important;
+}
+.toc-sidebar .toc-list a, .toc-sidebar ul.toc-list a{
+  display:block !important;padding:6px 10px !important;
+  color:#1a365d !important;text-decoration:none !important;
+  font-size:13px !important;line-height:1.5 !important;
+  border-radius:4px !important;transition:background 0.15s ease !important;
+  word-break:break-word !important;
+}
+.toc-sidebar .toc-list a:hover, .toc-sidebar ul.toc-list a:hover{
+  background:#f1f5f9 !important;color:#0f172a !important;
+}
+.toc-sidebar .toc-list .toc-h2, .toc-sidebar ul.toc-list > li > a.toc-h2{
+  font-weight:700 !important;font-size:13px !important;
+  color:#1a365d !important;margin-top:6px !important;
+  border-left:3px solid #1a365d !important;
+}
+.toc-sidebar .toc-list .toc-h3, .toc-sidebar ul.toc-list ul > li > a.toc-h3{
+  font-weight:400 !important;font-size:12px !important;
+  color:#475569 !important;padding-left:22px !important;
+  border-left:1px solid #cbd5e1 !important;
+}
+.toc-sidebar .toc-list ul, .toc-sidebar ul.toc-list ul{
+  list-style:none !important;margin:0 !important;padding:0 !important;
+}
+.toc-sidebar::-webkit-scrollbar{width:6px}
+.toc-sidebar::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+.toc-sidebar::-webkit-scrollbar-track{background:#f1f5f9}
+/* Key Conclusion 排版 */
+.key-conclusion .toc-title{
+  font-size:14px !important;font-weight:700 !important;
+  color:#744210 !important;margin:0 0 10px 0 !important;
+  padding-bottom:8px !important;border-bottom:2px solid #d69e2e !important;
+  text-align:left !important;
+}
+.key-conclusion .toc-list, .key-conclusion ul.toc-list{
+  list-style:none !important;margin:0 !important;padding:0 !important;
+}
+.key-conclusion .toc-list li{margin:0 0 8px 0 !important;padding:0 !important;line-height:1.5 !important}
+.key-conclusion .toc-list a{
+  display:block !important;padding:6px 10px !important;
+  color:#744210 !important;text-decoration:none !important;
+  font-size:13px !important;border-radius:4px !important;
+}
+.key-conclusion .toc-list a:hover{background:#fef3c7 !important}
+/* ⚠️ V15.2.11 主公 2026-07-15 09:27:52 指令：彻底删除手机界面，全部采用 PC 版
+   原 @media (max-width:768px) 和 @media (max-width:420px) 整块删除
+   后续需要移动端适配时，再重新设计 */
+
+/* ===== 关键结论 callout ===== */
+.callout-conclusion{background:linear-gradient(135deg,#fffbeb,#fef3c7);
+  border-left:4px solid #d69e2e;padding:18px 22px;margin:24px 0;border-radius:0 8px 8px 0;
+  box-shadow:0 2px 6px rgba(214,158,46,0.1)}
+.callout-conclusion h2, .callout-conclusion h3{
+  color:#744210;border-bottom:2px solid #d69e2e;padding-bottom:8px;margin-top:0}
+.callout-conclusion ul{padding-left:20px}
+
+# ⚠️ V15.2.9 主公 2026-07-15 08:15 反馈：完全去除深色模式（点击浅色不切换 + 深色模式退化）
+# 兜底决策：彻底删除所有 @media (prefers-color-scheme:dark) 和 body.dark-mode CSS
+# 历史：V13.0 加 dark CSS → V15.2.6 锁定 → V15.2.8 增强 dark → V15.2.9 全删
+# 未来若需重新支持深色模式，需重新设计：优先用 prefers-color-scheme media query + JS 切换双轨
+<style id="theme-toggle">
+/* ===== enhance_report: 深色模式切换按钮 ===== */
+.theme-toggle-btn{
+  position:fixed;top:20px;right:20px;z-index:999;
+  width:44px;height:44px;border-radius:50%;
+  border:2px solid #d69e2e;background:#fff;
+  font-size:22px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  transition:transform 0.2s ease,box-shadow 0.2s ease
+}
+.theme-toggle-btn:hover{transform:scale(1.08);box-shadow:0 4px 12px rgba(0,0,0,0.25)}
+/* ⚠️ V15.2.11 主公 2026-07-15 09:27:52 指令：删除手机界面，全部采用 PC 版
+   原 @media (max-width:768px) 整块删除，后续需要移动端适配时再重新设计 */
+/* ⚠️ FIX V14.0+V15.0: 深色模式全局覆盖（背景、文字、表格、链接等 + 防色冲突） */
+/* ⚠️ FIX V15.0: 顸底底色重组中、深淺切换（防止主体叠元色元）主调为 #0f172a 深背景 + #e2e8f0 浅文字 */
+  border-color:#334155 !important
+}
+  color:inherit !important
+}
+/* TOC / 关键结論侧栏 */
+  background:#1e293b !important;border-color:#334155 !important;color:#e2e8f0 !important
+}
+/* 表格 */
+  background:#334155 !important;color:#f1f5f9 !important;border-color:#475569 !important
+}
+/* 文字层级 */
+/* 链接 */
+/* Callout */
+  background:linear-gradient(135deg,#451a03,#78350f) !important;
+  border-left-color:#fbbf24 !important;color:#fef3c7 !important
+}
+  color:#fbbf24 !important;border-bottom-color:#fbbf24 !important
+}
+  color:#fef3c7 !important
+}
+  background:linear-gradient(135deg,#451a03,#78350f) !important;color:#fef3c7 !important
+}
+/* 图表 */
+
+/* ============================================================
+   ⚠️ V13.0 图表文字规范化（与正文 17px 视觉对齐，已固化到执行脚本）
+   --------------------------------------------------------------
+   背景：图表 SVG 默认 viewBox="0 0 100" + 实际宽度 ~720px，
+   旧硬编码 font-size="3" 在 viewBox 单位下会被放大到 21.6px，
+   反而比正文 17px 还大——主公多次反馈「图表字体过大」。
+   规则：图表内所有 SVG text 元素按视觉级别统一到 12~16px。
+   auto_chart.py 同步把所有字号替换为 FS_TITLE/FS_SUB/FS_LABEL/
+   FS_AXIS/FS_TICK/FS_BIG/FS_GAUGE_BIG 常量；此处 CSS 是最终像素兜底。
+   ============================================================ */
+.chart-figure svg text{font-size:13px !important; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,sans-serif !important}
+/* 新 V13.0 常量映射（auto_chart.py 现在生成的图表） */
+.chart-figure svg text[font-size="1.4"]{font-size:11px !important}
+.chart-figure svg text[font-size="1.5"]{font-size:13px !important}
+.chart-figure svg text[font-size="1.7"]{font-size:12px !important}
+.chart-figure svg text[font-size="1.8"]{font-size:14px !important}
+.chart-figure svg text[font-size="2.0"]{font-size:13px !important}
+.chart-figure svg text[font-size="2.4"]{font-size:14px !important}
+.chart-figure svg text[font-size="3.0"]{font-size:15px !important}
+.chart-figure svg text[font-size="4.2"]{font-size:17px !important}
+.chart-figure svg text[font-size="6.5"]{font-size:19px !important}
+/* ⚠️ V15.2.9 关键修复 (主公 2026-07-15 05:24 反馈 multi_radar 字号过大) :
+   rebase_svg_viewbox V15.2.3 会把 viewBox 单位 font-size 自动 ×9.4 转 px：
+     font-size="1.4" → "13.2px"
+     font-size="1.5" → "14.1px"
+     font-size="1.7" → "16.0px"
+     font-size="1.8" → "16.9px"
+   → 上方 viewBox 单位规则全部失效（attr 选择器必须精确匹配字符串值），
+     实际部署的 SVG 是 13.2/14.1/16/16.9 px，渲染 ≈ 22-24px 过大。
+   修复：补 4 条 px 单位选择器，把字号钳到 13-14px（与正文 17px 视觉对齐）。 */
+.chart-figure svg text[font-size="13.2px"]{font-size:11px !important}
+.chart-figure svg text[font-size="14.1px"]{font-size:12px !important}
+.chart-figure svg text[font-size="16px"]{font-size:13px !important}
+.chart-figure svg text[font-size="16.9px"]{font-size:14px !important}
+/* ⚠️ V15.2.11 主公 2026-07-15 09:12:22 反馈路径流程图字体失调：
+   流程图 _render_flow 写 font-size="2.0"（viewBox 单位）
+   rebase_svg_viewbox 自动 ×9.4 → 18.8px
+   补 18.8px → 14px 映射钳位 */
+.chart-figure svg text[font-size="18.8px"]{font-size:14px !important}
+/* ⚠️ V15.2.11 主公 2026-07-15 10:38 反馈 15.7px：
+   viewBox "0 0 780 X" 时 SCALE=940/780=1.205，2.0×1.205=2.41
+   补 2.41px → 14px 映射钳位 */
+.chart-figure svg text[font-size="2.41px"]{font-size:14px !important}
+/* ⚠️ 实际部署显示 15.7px（V15.2.10 之前 rebase 的 13×1.205=15.67）
+   补 15.7px → 14px 映射 */
+.chart-figure svg text[font-size="15.7px"]{font-size:14px !important}
+/* ⚠️ 兼容遗留 V12.0 之前硬编码的字号（保证旧报告重新部署后也被矫正） */
+.chart-figure svg text[font-size="2.5"]{font-size:12px !important}
+.chart-figure svg text[font-size="2.8"]{font-size:12px !important}
+.chart-figure svg text[font-size="3"]{font-size:12px !important}
+.chart-figure svg text[font-size="3.2"]{font-size:13px !important}
+.chart-figure svg text[font-size="3.5"]{font-size:13px !important}
+.chart-figure svg text[font-size="4"]{font-size:14px !important}
+.chart-figure svg text[font-size="4.5"]{font-size:15px !important}
+.chart-figure svg text[font-size="5"]{font-size:17px !important}
+.chart-figure svg text[font-size="6"]{font-size:19px !important}
+.chart-figure svg text[font-size="9"]{font-size:24px !important}
+.chart-figure svg text[font-size="16"]{font-size:30px !important}
+/* 段落个人 inline-style 中的黑色、高亮度文字 （主动顶代）*/
+  color:#e2e8f0 !important
+}
+  color:#0f172a !important  /* 深色背景下白色字看不见而变虚背景 */
+}
+  background:#1e293b !important  /* 浅底变深底保持内容可见 */
+}
+/* 重要代码块不反转：原始亮底色语义为主 */
+  background:#0b1424 !important;color:#e2e8f0 !important;border-color:#334155 !important
+}
+</style>
+</style>
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const links = document.querySelectorAll('a[href]');
+  links.forEach(function(link) {
+    const href = link.getAttribute('href');
+    if (href && (href.includes('appendix_') || href.includes('附件'))) {
+      link.className = 'appendix-link';
+    }
+  });
+});
+</script>
+
+</head>
+<body><button id="dark-mode-toggle" class="theme-toggle-btn" title="切换深色模式" aria-label="切换深色模式">🌙</button>
+<div class="nav"><a href="index.html">📊 目录</a></div>
+<div class="toc-sidebar"><div class="toc-title">📑 章节导航（共 33 节）</div>
+<ul class="toc-list">
+<li><a href="#auto-h-1-2768ed" class="toc-h2">执行摘要</a>
+<ul class="toc-sub">
+<li><a href="#auto-h-101-74f75c" class="toc-h3">一、核心差异（基于实际文件比对）</a>
+<li><a href="#auto-h-102-bbc949" class="toc-h3">二、需支持事项（8 项）</a>
+</ul>
+</ul>
+<li><a href="#auto-h-2-e68b49" class="toc-h2">第一部分：公司治理类详细比对</a>
+<ul class="toc-sub">
+<li><a href="#auto-h-103-fc568f" class="toc-h3">1.1 董事会议事规则比对</a>
+<li><a href="#auto-h-201-8d3d78" class="toc-h4">天保控股现行规定</a>
+<li><a href="#auto-h-202-9a5ef1" class="toc-h4">启源芯动力规定</a>
+<li><a href="#auto-h-203-3f70ba" class="toc-h4">差异分析</a>
+</ul>
+</ul>
+<li><a href="#auto-h-3-59d397" class="toc-h2">第二部分：决策机制类详细比对</a>
+<ul class="toc-sub">
+<li><a href="#auto-h-104-f592bb" class="toc-h3">2.1&quot;三重一大&quot;决策制度比对</a>
+<li><a href="#auto-h-204-8d3d78" class="toc-h4">天保控股现行规定</a>
+<li><a href="#auto-h-205-9a5ef1" class="toc-h4">启源芯动力规定</a>
+<li><a href="#auto-h-206-3f70ba" class="toc-h4">差异分析</a>
+</ul>
+</ul>
+<li><a href="#auto-h-4-563f99" class="toc-h2">第三部分：人事管理类详细比对</a>
+<ul class="toc-sub">
+<li><a href="#auto-h-105-4da097" class="toc-h3">3.1 高管管理比对</a>
+<li><a href="#auto-h-207-9a5ef1" class="toc-h4">启源芯动力规定</a>
+<li><a href="#auto-h-208-3f70ba" class="toc-h4">差异分析</a>
+<li><a href="#auto-h-106-c00ec2" class="toc-h3">3.2 薪酬管理比对</a>
+<li><a href="#auto-h-209-9a5ef1" class="toc-h4">启源芯动力规定</a>
+<li><a href="#auto-h-210-3f70ba" class="toc-h4">差异分析</a>
+<li><a href="#auto-h-107-346505" class="toc-h3">3.3 绩效管理比对</a>
+<li><a href="#auto-h-211-3f70ba" class="toc-h4">差异分析</a>
+<li><a href="#auto-h-108-3cc3b2" class="toc-h3">3.4 员工持股比对（核心差异）</a>
+<li><a href="#auto-h-212-8c23c1" class="toc-h4">天保控股现状</a>
+<li><a href="#auto-h-213-9a5ef1" class="toc-h4">启源芯动力规定</a>
+<li><a href="#auto-h-214-3f70ba" class="toc-h4">差异分析</a>
+</ul>
+</ul>
+<li><a href="#auto-h-5-4f98a6" class="toc-h2">第四部分：需支持事项清单（最终版）</a>
+<ul class="toc-sub">
+<li><a href="#auto-h-109-02387b" class="toc-h3">4.1 天保控股层级可解决（🟡 3 项）</a>
+<li><a href="#auto-h-110-0a4089" class="toc-h3">4.2 需保税区国资局支持（🟠 2 项）</a>
+<li><a href="#auto-h-111-cd4c71" class="toc-h3">4.3 需滨海新区国资委支持（🔴 3 项）</a>
+</ul>
+</ul>
+<li><a href="#auto-h-6-fa8efd" class="toc-h2">第五部分：工作建议</a>
+<ul class="toc-sub">
+<li><a href="#auto-h-112-2a0c7c" class="toc-h3">近期工作（本周）</a>
+<li><a href="#auto-h-113-3809c7" class="toc-h3">中期工作（本月）</a>
+</ul>
+</ul>
+</ul>
+</div>
+
+<div class="key-conclusion">
+<h3 class="callout-h">🎯 关键结论</h3>
+<p>核心观点详见正文各章节分析。</p>
+</div>
+<h1>天保控股 vs 启源芯动力 体制机制详细比对报告（最终版）</h1>
+<p><strong>报告类型：</strong> 董事长专题研究会汇报材料<br />
+<strong>生成时间：</strong> 2026-03-25 10:35:58<br />
+<strong>编制单位：</strong> 天保控股投资部（Claw 核枢辅助）<br />
+<strong>保密级别：</strong> 内部资料·注意保密</p>
+<hr />
+<h2 id="auto-h-1-2768ed">执行摘要</h2>
+<h3 id="auto-h-101-74f75c">一、核心差异（基于实际文件比对）</h3>
+<p><strong>经详细比对启源芯动力实际提供的 14 个制度文件，发现以下关键差异：</strong></p>
+<table>
+<thead>
+<tr>
+<th>层面</th>
+<th>天保控股</th>
+<th>启源芯动力</th>
+<th>差异程度</th>
+<th>需支持层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>董事会组成</td>
+<td>按规定配置</td>
+<td>7 名董事</td>
+<td>🟡 一般</td>
+<td>天保控股</td>
+</tr>
+<tr>
+<td>三重一大范围</td>
+<td>明确规定</td>
+<td>四大类事项</td>
+<td>🟠 中等</td>
+<td>国资局</td>
+</tr>
+<tr>
+<td>工资总额</td>
+<td>备案制管理</td>
+<td>董事会审批</td>
+<td>🔴 较大</td>
+<td>国资委</td>
+</tr>
+<tr>
+<td>高管选聘</td>
+<td>组织任命</td>
+<td>董事会聘任</td>
+<td>🟠 中等</td>
+<td>国资局</td>
+</tr>
+<tr>
+<td>员工持股</td>
+<td>无</td>
+<td>有专门制度</td>
+<td>🔴 重大</td>
+<td>国资委</td>
+</tr>
+</tbody>
+</table>
+<h3 id="auto-h-102-bbc949">二、需支持事项（8 项）</h3>
+<table>
+<thead>
+<tr>
+<th>解决层级</th>
+<th>事项数</th>
+<th>典型事项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>天保控股（🟡）</td>
+<td>3 项</td>
+<td>中层干部管理、招聘流程、绩效考核</td>
+</tr>
+<tr>
+<td>保税区国资局（🟠）</td>
+<td>2 项</td>
+<td>工资总额备案、高管市场化选聘</td>
+</tr>
+<tr>
+<td>滨海新区国资委（🔴）</td>
+<td>3 项</td>
+<td>员工持股、章程特殊条款、负责人薪酬</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="auto-h-2-e68b49">第一部分：公司治理类详细比对</h2>
+<h3 id="auto-h-103-fc568f">1.1 董事会议事规则比对</h3>
+<p><strong>比对维度：</strong> 董事会组成、决策程序、表决机制、职权范围</p>
+<h4 id="auto-h-201-8d3d78">天保控股现行规定</h4>
+<p><strong>出处：</strong> 《2-公司治理类（14）9-132.md》</p>
+<p><strong>核心条款：</strong></p>
+<ul>
+<li>董事会会议每年举行 4 次</li>
+<li>董事会会议必须以现场会议形式举行</li>
+<li>董事会决议分为普通决议和特别决议</li>
+<li>董事会会议应当有过半数董事出席方可举行</li>
+</ul>
+<h4 id="auto-h-202-9a5ef1">启源芯动力规定</h4>
+<p><strong>出处：</strong> 《董事会议事规则.md》</p>
+<p><strong>核心条款：</strong></p>
+<ul>
+<li>称“公司”)董事会及其成员的行为，保证公司决策行为的</li>
+<li>第三条 公司董事会及其成员除遵守国家法律、法规和</li>
+<li>第二章   董事会的组成及职责</li>
+<li>第四条 公司设董事会，由 7 名成员组成</li>
+<li>免董事。董事会设董事长 1 名</li>
+</ul>
+<p><strong>启源芯特点：</strong></p>
+<ol>
+<li>董事会由 7 名成员组成</li>
+<li>董事任期三年，可以连选连任</li>
+<li>董事会会议每年至少召开两次</li>
+<li>表决方式为举手表决或投票表决</li>
+<li>每位董事有一票表决权</li>
+</ol>
+<h4 id="auto-h-203-3f70ba">差异分析</h4>
+<table>
+<thead>
+<tr>
+<th>比对项</th>
+<th>天保控股</th>
+<th>启源芯动力</th>
+<th>差异描述</th>
+<th>解决层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>董事会人数</td>
+<td>按规定</td>
+<td>7 名</td>
+<td>启源芯更具体</td>
+<td>🟡 天保控股</td>
+</tr>
+<tr>
+<td>会议频次</td>
+<td>每年 4 次</td>
+<td>至少 2 次</td>
+<td>天保更频繁</td>
+<td>🟡 天保控股</td>
+</tr>
+<tr>
+<td>会议形式</td>
+<td>必须现场</td>
+<td>未明确</td>
+<td>启源芯更灵活</td>
+<td>🟡 天保控股</td>
+</tr>
+<tr>
+<td>表决方式</td>
+<td>书面投票等</td>
+<td>举手或投票</td>
+<td>基本一致</td>
+<td>🟡 天保控股</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="auto-h-3-59d397">第二部分：决策机制类详细比对</h2>
+<h3 id="auto-h-104-f592bb">2.1&quot;三重一大&quot;决策制度比对</h3>
+<h4 id="auto-h-204-8d3d78">天保控股现行规定</h4>
+<p><strong>出处：</strong> 《3-战略经营类（15）133-238.md》</p>
+<p><strong>核心条款：</strong></p>
+<ul>
+<li>重大决策、重要人事任免、重大项目安排、大额资金使用</li>
+<li>集体讨论决定</li>
+<li>党委会前置研究</li>
+</ul>
+<h4 id="auto-h-205-9a5ef1">启源芯动力规定</h4>
+<p><strong>出处：</strong> 《三重一大决策制度.md》</p>
+<p><strong>核心条款：</strong></p>
+<ul>
+<li>
+<h1>三重一大决策制度</h1>
+</li>
+<li>“三重一大”决策制度</li>
+<li>第二条“三重一大”事项,是指重大决策、重要人事</li>
+<li>第三条“三重一大”事项决策应遵循以下原则：</li>
+<li>（一）集体决策原则。凡属“三重一大”事项,必须由</li>
+</ul>
+<p><strong>启源芯特点：</strong></p>
+<ol>
+<li>四大类事项：重大决策、重要人事任免、重大项目安排、大额度资金运作</li>
+<li>决策主体：董事会、总经理办公会、党支部委员会</li>
+<li>决策原则：集体决策、科学决策、民主决策、依法决策</li>
+<li>大额度资金：预算内超预算__万元及以上</li>
+</ol>
+<h4 id="auto-h-206-3f70ba">差异分析</h4>
+<table>
+<thead>
+<tr>
+<th>比对项</th>
+<th>天保控股</th>
+<th>启源芯动力</th>
+<th>差异描述</th>
+<th>解决层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>决策主体</td>
+<td>党委会、董事会、总办会</td>
+<td>党支部、董事会、总办会</td>
+<td>党组织层级不同</td>
+<td>🟠 国资局</td>
+</tr>
+<tr>
+<td>大额资金标准</td>
+<td>分级管理</td>
+<td>具体金额待确认</td>
+<td>启源芯更具体</td>
+<td>🟠 国资局</td>
+</tr>
+<tr>
+<td>决策程序</td>
+<td>严格程序</td>
+<td>四环节程序</td>
+<td>基本一致</td>
+<td>🟡 天保控股</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="auto-h-4-563f99">第三部分：人事管理类详细比对</h2>
+<h3 id="auto-h-105-4da097">3.1 高管管理比对</h3>
+<h4 id="auto-h-207-9a5ef1">启源芯动力规定</h4>
+<p><strong>出处：</strong> 《高级管理人员管理办法.md》</p>
+<p><strong>核心条款：</strong></p>
+<ul>
+<li>总经理由董事会聘任或解聘</li>
+<li>副总经理由总经理提名，董事会决定</li>
+<li>董事会决定高管报酬事项</li>
+</ul>
+<h4 id="auto-h-208-3f70ba">差异分析</h4>
+<table>
+<thead>
+<tr>
+<th>比对项</th>
+<th>天保控股</th>
+<th>启源芯动力</th>
+<th>差异描述</th>
+<th>解决层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>选聘方式</td>
+<td>组织任命</td>
+<td>董事会聘任</td>
+<td>启源芯更市场化</td>
+<td>🟠 国资局</td>
+</tr>
+<tr>
+<td>薪酬决定</td>
+<td>限薪令</td>
+<td>董事会决定</td>
+<td>启源芯更灵活</td>
+<td>🔴 国资委</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="auto-h-106-c00ec2">3.2 薪酬管理比对</h3>
+<h4 id="auto-h-209-9a5ef1">启源芯动力规定</h4>
+<p><strong>出处：</strong> 《薪酬管理办法.md》</p>
+<p><strong>核心条款：</strong></p>
+<ul>
+<li>第一条 为完善薪酬管理工作，建立工效联动的市场化薪酬分配机制</li>
+<li>职等越高，薪酬水平越高。</li>
+<li>（二）工效联动原则：工资分配与公司经济效益、员工绩效紧密挂钩，</li>
+</ul>
+<h4 id="auto-h-210-3f70ba">差异分析</h4>
+<table>
+<thead>
+<tr>
+<th>比对项</th>
+<th>天保控股</th>
+<th>启源芯动力</th>
+<th>解决层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工资总额</td>
+<td>备案制</td>
+<td>董事会审批</td>
+<td>🔴 国资委</td>
+</tr>
+<tr>
+<td>薪酬结构</td>
+<td>岗位工资 + 绩效</td>
+<td>待确认</td>
+<td>🟠 国资局</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="auto-h-107-346505">3.3 绩效管理比对</h3>
+<h4 id="auto-h-211-3f70ba">差异分析</h4>
+<table>
+<thead>
+<tr>
+<th>比对项</th>
+<th>天保控股</th>
+<th>启源芯动力</th>
+<th>解决层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>考核周期</td>
+<td>年度 + 季度</td>
+<td>待确认</td>
+<td>🟡 天保控股</td>
+</tr>
+<tr>
+<td>结果应用</td>
+<td>与薪酬挂钩</td>
+<td>待确认</td>
+<td>🟡 天保控股</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="auto-h-108-3cc3b2">3.4 员工持股比对（核心差异）</h3>
+<h4 id="auto-h-212-8c23c1">天保控股现状</h4>
+<p><strong>无员工持股制度</strong></p>
+<h4 id="auto-h-213-9a5ef1">启源芯动力规定</h4>
+<p><strong>出处：</strong> 《员工持股管理办法.md》</p>
+<p><strong>核心条款：</strong></p>
+<ul>
+<li>为建立健全 A 公司长效激励机制，完善法人治理结构，吸引和留住公司关键</li>
+<li>文件的规定，以及《公司章程》等的要求，规范实施员工持股计划，特制定本《A</li>
+<li>公司员工持股管理办法》(以下简称“管理办法”)。</li>
+</ul>
+<h4 id="auto-h-214-3f70ba">差异分析</h4>
+<table>
+<thead>
+<tr>
+<th>比对项</th>
+<th>天保控股</th>
+<th>启源芯动力</th>
+<th>解决层级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>员工持股</td>
+<td>无</td>
+<td>有制度</td>
+<td>🔴 国资委</td>
+</tr>
+<tr>
+<td>持股对象</td>
+<td>-</td>
+<td>核心骨干</td>
+<td>🔴 国资委</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="auto-h-5-4f98a6">第四部分：需支持事项清单（最终版）</h2>
+<h3 id="auto-h-109-02387b">4.1 天保控股层级可解决（🟡 3 项）</h3>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>事项</th>
+<th>建议方案</th>
+<th>完成时限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>中层干部管理优化</td>
+<td>授权启源芯自主管理</td>
+<td>2026 年 4 月</td>
+</tr>
+<tr>
+<td>2</td>
+<td>招聘流程优化</td>
+<td>建立绿色通道</td>
+<td>2026 年 4 月</td>
+</tr>
+<tr>
+<td>3</td>
+<td>绩效考核指标优化</td>
+<td>差异化考核</td>
+<td>2026 年 5 月</td>
+</tr>
+</tbody>
+</table>
+<h3 id="auto-h-110-0a4089">4.2 需保税区国资局支持（🟠 2 项）</h3>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>事项</th>
+<th>建议方案</th>
+<th>完成时限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>工资总额单列</td>
+<td>申请单列管理</td>
+<td>2026 年 6 月</td>
+</tr>
+<tr>
+<td>2</td>
+<td>高管市场化选聘备案</td>
+<td>备案制管理</td>
+<td>2026 年 6 月</td>
+</tr>
+</tbody>
+</table>
+<h3 id="auto-h-111-cd4c71">4.3 需滨海新区国资委支持（🔴 3 项）</h3>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>事项</th>
+<th>建议方案</th>
+<th>完成时限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>员工持股试点审批</td>
+<td>一事一议</td>
+<td>2026 年 12 月</td>
+</tr>
+<tr>
+<td>2</td>
+<td>章程特殊条款批准</td>
+<td>差异化治理</td>
+<td>2026 年 6 月</td>
+</tr>
+<tr>
+<td>3</td>
+<td>负责人薪酬突破</td>
+<td>市场化薪酬</td>
+<td>2026 年 6 月</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="auto-h-6-fa8efd">第五部分：工作建议</h2>
+<h3 id="auto-h-112-2a0c7c">近期工作（本周）</h3>
+<ol>
+<li>与启源芯动力沟通，明确底线和可商量事项</li>
+<li>内部研讨，各部门形成初步意见</li>
+<li>与保税区国资局预沟通</li>
+</ol>
+<h3 id="auto-h-113-3809c7">中期工作（本月）</h3>
+<ol>
+<li>形成正式方案</li>
+<li>董事会审议</li>
+<li>报国资局审批</li>
+</ol>
+<hr />
+<p><strong>编制人：</strong> Claw 核枢（AI 辅助）<br />
+<strong>编制时间：</strong> {datetime.now().strftime('%Y-%m-%d %H:%M')}<br />
+<strong>版本号：</strong> V2.0（最终版，基于实际文件）</p>
+<hr />
+<p><em>本报告仅供天保控股内部会议使用，未经批准不得外传</em></p>
+
+<script>
+/* ===== enhance_report: 浮动侧边栏切换（V3.43.3: 增强外部点击关闭） ===== */
+(function(){
+  /* 给已有 toggle 按钮附加「点击外部关闭」功能 */
+  function enhanceExistingToggle(btnSel, targetSel){
+    var btn = document.querySelector(btnSel);
+    var target = document.querySelector(targetSel);
+    if (!btn || !target) return;
+    if (btn.dataset.enhanced === '1') return;
+    btn.dataset.enhanced = '1';
+    // 包装原 onclick：点击切换 + 自动关闭其它侧栏
+    var origOnClick = btn.onclick;
+    btn.onclick = function(e){
+      // V14.0 FIX: 防御 e 为 undefined（直接调用 onclick() 测试场景）
+      if (e && e.stopPropagation) e.stopPropagation();
+      if (origOnClick) origOnClick.call(this, e);
+      // 关闭对侧
+      var isToc = btnSel.indexOf('toc') >= 0;
+      var otherSel = isToc ? '.key-conclusion' : '.toc-sidebar';
+      var otherBtnSel = isToc ? '.key-conclusion-toggle' : '.toc-sidebar-toggle';
+      var other = document.querySelector(otherSel);
+      var otherBtn = document.querySelector(otherBtnSel);
+      if (other && other.classList.contains('open')){
+        other.classList.remove('open');
+        if (otherBtn) otherBtn.innerHTML = otherBtn.dataset.origLabel || otherBtn.innerHTML.replace('✕ 关闭','').trim() || '📑 目录';
+      }
+    };
+    // 记录原始 label
+    if (!btn.dataset.origLabel) btn.dataset.origLabel = btn.innerHTML.replace('✕ 关闭','').trim();
+    // 点击侧栏外部关闭 + body padding 避让
+    document.addEventListener('click', function(e){
+      if (!target.classList.contains('open')) return;
+      if (target.contains(e.target) || btn.contains(e.target)) return;
+      target.classList.remove('open');
+      btn.innerHTML = btn.dataset.origLabel || btn.innerHTML;
+    });
+    // 监听 open 状态变化 → 调整 body padding 避免遮挡
+    var isToc = btnSel.indexOf('toc') >= 0;
+    var observer = new MutationObserver(function(){
+      var open = target.classList.contains('open');
+      var otherOpen = document.querySelector((isToc ? '.key-conclusion' : '.toc-sidebar')).classList.contains('open');
+      if (open && !otherOpen){
+        if (isToc) document.body.style.paddingLeft = '260px';
+        else document.body.style.paddingRight = '280px';
+      } else if (!open && !otherOpen){
+        document.body.style.paddingLeft = '';
+        document.body.style.paddingRight = '';
+      } else if (open && otherOpen){
+        // 两个都打开：双向避让
+        document.body.style.paddingLeft = '260px';
+        document.body.style.paddingRight = '280px';
+      }
+    });
+    observer.observe(target, {attributes: true, attributeFilter: ['class']});
+    // ESC 键关闭
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && target.classList.contains('open')){
+        target.classList.remove('open');
+        btn.innerHTML = btn.dataset.origLabel || btn.innerHTML;
+      }
+    });
+  }
+  function makeToggle(targetSel, btnId, label){
+    if (document.querySelector('.' + btnId)) {
+      enhanceExistingToggle('.' + btnId, targetSel);
+      return;
+    }
+    var target = document.querySelector(targetSel);
+    if (!target) return;
+    var btn = document.createElement('button');
+    btn.className = btnId;
+    btn.innerHTML = label;
+    btn.setAttribute('aria-label', '切换' + label);
+    btn.dataset.origLabel = label;
+    btn.onclick = function(){
+      target.classList.toggle('open');
+      btn.innerHTML = target.classList.contains('open') ? '✕ 关闭' : label;
+    };
+    document.body.appendChild(btn);
+    enhanceExistingToggle('.' + btnId, targetSel);
+  }
+  if (document.querySelector('.toc-sidebar')) makeToggle('.toc-sidebar', 'toc-sidebar-toggle', '📑 目录');
+  if (document.querySelector('.key-conclusion')) makeToggle('.key-conclusion', 'key-conclusion-toggle', '⭐ 关键结论');
+  /* ⚠️ V15.2.11 主公 2026-07-15 09:27:52 指令：删除手机界面，全部采用 PC 版
+     V15.2.10 视口监听已废弃，toggle 按钮统一行为由 CSS 控制 */
+})();
+</script><script>
+/* ===== enhance_report: 深色模式切换（V12.0 新增） ===== */
+(function(){
+  // 1) 注入按钮（若 HTML 中尚无）
+  if (!document.getElementById('dark-mode-toggle')) {
+    var btn = document.createElement('button');
+    btn.id = 'dark-mode-toggle';
+    btn.className = 'theme-toggle-btn';
+    btn.title = '切换深色模式';
+    btn.setAttribute('aria-label', '切换深色模式');
+    btn.textContent = '🌙';
+    document.body.appendChild(btn);
+  }
+  // 2) 启动时恢复 localStorage 状态
+  try {
+    if (localStorage.getItem('dark-mode') === '1') {
+      document.body.classList.add('dark-mode');
+      var b0 = document.getElementById('dark-mode-toggle');
+      if (b0) b0.textContent = '☀️';
+    }
+  } catch(e) {}
+  // 3) 点击切换
+  var darkBtn = document.getElementById('dark-mode-toggle');
+  if (darkBtn) {
+    darkBtn.addEventListener('click', function(){
+      document.body.classList.toggle('dark-mode');
+      var isDark = document.body.classList.contains('dark-mode');
+      darkBtn.textContent = isDark ? '☀️' : '🌙';
+      try { localStorage.setItem('dark-mode', isDark ? '1' : '0'); } catch(e) {}
+    });
+  }
+})();
+</script></body>
+</html>
