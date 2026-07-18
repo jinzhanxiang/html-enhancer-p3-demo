@@ -123,6 +123,36 @@ a:hover{color:#1a365d;text-decoration:underline}
   color:#475569 !important;padding-left:22px !important;
   border-left:1px solid #cbd5e1 !important;
 }
+
+/* P11 FIX 2026-07-18 18:35 · 主公反馈"其他目录字号回退 19px + 关键结论遮盖正文" */
+.toc-sidebar .toc-list > li > a.toc-h2,
+.toc-sidebar ul.toc-list > li > a.toc-h2 {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #1a365d !important;
+  margin-top: 6px !important;
+}
+.toc-sidebar .toc-list > li > a.toc-h3,
+.toc-sidebar ul.toc-list > li > a.toc-h3 {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: #475569 !important;
+}
+.toc-sidebar .toc-list > li > a.toc-h4,
+.toc-sidebar ul.toc-list > li > a.toc-h4 {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #475569 !important;
+  padding-left: 22px !important;
+}
+.toc-sidebar .toc-list > li > a.toc-h5,
+.toc-sidebar ul.toc-list > li > a.toc-h5 {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #475569 !important;
+  padding-left: 30px !important;
+}
+
 .toc-sidebar .toc-list ul, .toc-sidebar ul.toc-list ul{
   list-style:none !important;margin:0 !important;padding:0 !important;
 }
@@ -145,6 +175,25 @@ a:hover{color:#1a365d;text-decoration:underline}
   color:#744210 !important;text-decoration:none !important;
   font-size:15px !important;border-radius:4px !important;
 }
+
+/* P11 FIX: 关键结论不遮盖正文 - body 让出 280px 右侧空间 */
+@media (min-width: 1281px) {
+  body {
+    padding-right: 280px !important;
+  }
+}
+@media (max-width: 1280px) {
+  body {
+    padding-right: 20px !important;
+  }
+  .key-conclusion {
+    position: static !important;
+    max-width: 100% !important;
+    width: auto !important;
+    margin: 24px 0 !important;
+  }
+}
+
 .key-conclusion .toc-list a:hover{background:#fef3c7 !important}
 /* ⚠️ V15.2.11 主公 2026-07-15 09:27:52 指令：彻底删除手机界面，全部采用 PC 版
    原 @media (max-width:768px) 和 @media (max-width:420px) 整块删除
