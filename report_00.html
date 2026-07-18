@@ -125,51 +125,33 @@ a:hover{color:#1a365d;text-decoration:underline}
 }
 
 /* P11 FIX 2026-07-18 18:35 · 主公反馈"其他目录字号回退 19px + 关键结论遮盖正文" */
-.toc-sidebar .toc-list > li > a.toc-h2,
-.toc-sidebar ul.toc-list > li > a.toc-h2 {
+/* ⚠️ 关键：用后代选择器（不带 >），因为 toc-hN 嵌在 ul.toc-sub > li 内，强制直接子会失效 */
+.toc-sidebar a.toc-h2 {
   font-size: 15px !important;
   font-weight: 700 !important;
   color: #1a365d !important;
   margin-top: 6px !important;
 }
-.toc-sidebar .toc-list > li > a.toc-h3,
-.toc-sidebar ul.toc-list > li > a.toc-h3 {
+.toc-sidebar a.toc-h3 {
   font-size: 14px !important;
-  font-weight: 400 !important;
-  color: #475569 !important;
-}
-.toc-sidebar .toc-list > li > a.toc-h4,
-.toc-sidebar ul.toc-list > li > a.toc-h4 {
-  font-size: 13px !important;
   font-weight: 400 !important;
   color: #475569 !important;
   padding-left: 22px !important;
 }
-.toc-sidebar .toc-list > li > a.toc-h5,
-.toc-sidebar ul.toc-list > li > a.toc-h5 {
+.toc-sidebar a.toc-h4 {
   font-size: 13px !important;
   font-weight: 400 !important;
-  color: #475569 !important;
+  color: #64748b !important;
+  padding-left: 22px !important;
+}
+.toc-sidebar a.toc-h5 {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #64748b !important;
   padding-left: 30px !important;
 }
 
-.toc-sidebar .toc-list ul, .toc-sidebar ul.toc-list ul{
-  list-style:none !important;margin:0 !important;padding:0 !important;
-}
-.toc-sidebar::-webkit-scrollbar{width:6px}
-.toc-sidebar::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
-.toc-sidebar::-webkit-scrollbar-track{background:#f1f5f9}
-/* Key Conclusion 排版 */
-.key-conclusion .toc-title{
-  font-size:16px !important;font-weight:700 !important;
-  color:#744210 !important;margin:0 0 10px 0 !important;
-  padding-bottom:8px !important;border-bottom:2px solid #d69e2e !important;
-  text-align:left !important;
-}
-.key-conclusion .toc-list, .key-conclusion ul.toc-list{
-  list-style:none !important;margin:0 !important;padding:0 !important;
-}
-.key-conclusion .toc-list li{margin:0 0 8px 0 !important;padding:0 !important;line-height:1.5 !important}
+
 .key-conclusion .toc-list a{
   display:block !important;padding:6px 10px !important;
   color:#744210 !important;text-decoration:none !important;
@@ -181,7 +163,28 @@ a:hover{color:#1a365d;text-decoration:underline}
   body {
     padding-right: 280px !important;
   }
+  .key-conclusion {
+    position: fixed !important;
+    right: 20px !important;
+    width: 240px !important;
+    max-width: 240px !important;
+  }
 }
+@media (max-width: 1280px) {
+  body {
+    padding-right: 20px !important;
+  }
+  .key-conclusion {
+    position: static !important;
+    max-width: 100% !important;
+    width: auto !important;
+    margin: 24px 0 !important;
+  }
+}
+
+
+/* P11 FIX: 关键结论不遮盖正文 - body 让出 280px 右侧空间 */
+
 @media (max-width: 1280px) {
   body {
     padding-right: 20px !important;
